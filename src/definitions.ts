@@ -25,8 +25,15 @@ export const gameDefinitions = {
 
 export type PlayerPosition = 'a' | 'b';
 
-export interface PlayDefinitions {
-    action: 'start';
+export interface ISingleGame {
+    type: 'single';
+    position: PlayerPosition;
+}
+
+export interface IMultiplayerGame {
+    type: 'multiplayer';
     position: PlayerPosition;
     userId: number;
+    socket: WebSocket;
 }
+export type PlayDefinitions = ISingleGame | IMultiplayerGame;

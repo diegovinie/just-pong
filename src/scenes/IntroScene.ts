@@ -30,7 +30,18 @@ export class IntroScene extends Phaser.Scene {
             this.scene.run('Play', def);
         };
 
-        this.connectButton = this.createTextButton(60, 40, 'Start', {
+        this.connectButton = this.createTextButton(20, 40, 'Single', {
+            onClick: () => {
+                runGame({ type: 'single', position: 'a' });
+            },
+            color: '#ffaaff',
+            hoverColor: '#ff0000',
+            pressedColor: '#4400ff',
+            style: {},
+        });
+
+
+        this.connectButton = this.createTextButton(120, 40, 'Multiplayer', {
             onClick: () => this.connectRoom(runGame),
             color: '#ffaaff',
             hoverColor: '#ff0000',
@@ -76,12 +87,18 @@ export class IntroScene extends Phaser.Scene {
         ws.onopen = (e => {
 
             ws.onmessage = msgEvent => {
-                const message: PlayDefinitions = JSON.parse(msgEvent.data);
+                const message = JSON.parse(msgEvent.data);
 
                 if (message.action === 'start') {
                     console.log(message);
+                    const gameDefs: PlayDefinitions = {
+                        position: message.position,
+                        userId: message.userId,
+                        type: 'multiplayer',
+                        socket: ws,
+                    }
 
-                    callback(message);
+                    callback(gameDefs);
                 }
             };
 

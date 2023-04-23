@@ -1,5 +1,4 @@
 import * as Phaser from 'phaser';
-import { ws } from './IntroScene';
 import { gameDefinitions, PlayerPosition, PlayDefinitions } from '../definitions';
 
 type Paddle = Phaser.GameObjects.Rectangle;
@@ -17,7 +16,15 @@ interface IPlayer {
     inputDef: Record<GameKey, Phaser.Input.Keyboard.Key>;
 }
 
+class SocketEmulator {
+    onmessage: (ev: { data: string; }) => void;
 
+    send(data: string) {
+        this.onmessage({ data });
+    }
+}
+
+type GameComm = WebSocket | SocketEmulator;
 
 export class PlayScene extends Phaser.Scene {
     environment: Record<string, Phaser.GameObjects.Rectangle>;
@@ -27,6 +34,7 @@ export class PlayScene extends Phaser.Scene {
     userId: number;
     tickerId: number; // NodeJS.Timer;
     static TICK: number = 100;
+    socket: GameComm;
 
     constructor(){
         super('Play');
@@ -37,8 +45,15 @@ export class PlayScene extends Phaser.Scene {
     }
 
     create(def: PlayDefinitions) {
+        if (def.type === 'multiplayer') {
+            this.userId = def.userId;
+            this.socket = def.socket;
+
+        } else if (def.type === 'single') {
+            this.socket = new SocketEmulator();
+        }
+
         this.position = def.position;
-        this.userId = def.userId;
 
         const { screen, walls, paddle, ball } = gameDefinitions;
 
@@ -84,7 +99,7 @@ export class PlayScene extends Phaser.Scene {
 
         this.startTicker();
 
-        ws.onmessage = msgEvent => {
+        this.socket.onmessage = msgEvent => {
             const message = JSON.parse(msgEvent.data);
 
             if (message.action === 'update') {
@@ -116,7 +131,7 @@ export class PlayScene extends Phaser.Scene {
             }
 
             if (hadAction) {
-                ws.send(JSON.stringify({ action: 'update', player: this.position, inputs }));
+                this.socket.send(JSON.stringify({ action: 'update', player: this.position, inputs }));
             }
 
         }, PlayScene.TICK);
