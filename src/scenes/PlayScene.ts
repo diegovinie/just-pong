@@ -1,9 +1,8 @@
 import * as Phaser from 'phaser';
 import { ws } from './IntroScene';
-import { gameDefinitions } from '../definitions';
+import { gameDefinitions, PlayerPosition, PlayDefinitions } from '../definitions';
 
-type Rectangle = Phaser.GameObjects.Rectangle;
-type PlayerPosition = 'a' | 'b';
+type Paddle = Phaser.GameObjects.Rectangle;
 type GameKey = 'keyUp' | 'keyDown';
 
 enum PlayerMove {
@@ -12,18 +11,19 @@ enum PlayerMove {
 }
 
 interface IPlayer {
-    gameObject: Rectangle;
+    gameObject: Paddle;
     inputs: Record<PlayerMove, boolean> | {};
     position: PlayerPosition;
     inputDef: Record<GameKey, Phaser.Input.Keyboard.Key>;
 }
 
+
+
 export class PlayScene extends Phaser.Scene {
-    environment: Record<string, Rectangle>;
-    players: Record<string, IPlayer>;
-    keys: Record<string, Phaser.Input.Keyboard.Key> = {};
-    ball: Rectangle;
-    position: string;
+    environment: Record<string, Phaser.GameObjects.Rectangle>;
+    players: Record<PlayerPosition, IPlayer>;
+    ball: Phaser.GameObjects.Rectangle;
+    position: PlayerPosition;
     userId: number;
     tickerId: number; // NodeJS.Timer;
     static TICK: number = 100;
@@ -36,7 +36,7 @@ export class PlayScene extends Phaser.Scene {
 
     }
 
-    create(def) {
+    create(def: PlayDefinitions) {
         this.position = def.position;
         this.userId = def.userId;
 
@@ -65,61 +65,10 @@ export class PlayScene extends Phaser.Scene {
 
         this.environment = { bg, topWall, bottomWall };
 
-        const paddleA = this.add.rectangle(
-            2 * screen.padding,
-            screen.height / 2,
-            paddle.thickness,
-            paddle.length,
-            this.position === 'a' ? paddle.playerColor : paddle.color,
-        );
+        this.createBall();
 
-        const paddleB = this.add.rectangle(
-            screen.width - 2 * screen.padding,
-            screen.height / 2,
-            paddle.thickness,
-            paddle.length,
-            this.position === 'b' ? paddle.playerColor : paddle.color,
-        );
-
-
-
-        this.ball = this.add.rectangle(
-            screen.width / 2,
-            screen.height / 2,
-            ball.size,
-            ball.size,
-            ball.color,
-        );
-
-        this.physics.add.existing(paddleA);
-        this.physics.add.existing(paddleB);
-        this.physics.add.existing(this.ball);
-
-
-        paddleA.body.pushable = false;
-        paddleA.body.bounce.y = 0;
-        paddleB.body.pushable = false;
-
-        const colliderTop = (paddle, wall) => {
-            paddle.y = wall.y + wall.height + paddle.height / 2 + 1;
-        }
-        const colliderBottom = (paddle, wall) => {
-            paddle.y = wall.y - (paddle.height / 2 + 1);
-        }
-
-        this.physics.add.collider(this.ball, topWall);
-        this.physics.add.collider(this.ball, bottomWall);
-        this.physics.add.collider(this.ball, paddleA);
-        this.physics.add.collider(this.ball, paddleB);
-        this.physics.add.collider(paddleA, topWall, colliderTop);
-        this.physics.add.collider(paddleA, bottomWall, colliderBottom);
-        this.physics.add.collider(paddleB, topWall, colliderTop);
-        this.physics.add.collider(paddleB, bottomWall, colliderBottom);
-
-        this.ball.body.velocity.x = 50;
-        this.ball.body.velocity.y = -60;
-        this.ball.body.bounce.x = 1.1;
-        this.ball.body.bounce.y = 1.1;
+        const paddleA = this.getPaddle('a');
+        const paddleB = this.getPaddle('b');
 
         this.input.keyboard.addCapture([
             Phaser.Input.Keyboard.KeyCodes.UP,
@@ -128,12 +77,10 @@ export class PlayScene extends Phaser.Scene {
             Phaser.Input.Keyboard.KeyCodes.S,
         ]);
 
-
         this.players = {
             a: { gameObject: paddleA, inputs: {}, position: 'a', inputDef: this.createInputDef('a') },
             b: { gameObject: paddleB, inputs: {}, position: 'b', inputDef: this.createInputDef('b') }
         };
-
 
         this.startTicker();
 
@@ -219,5 +166,66 @@ export class PlayScene extends Phaser.Scene {
 
                 break;
         }
+    }
+
+    createBall() {
+        const { ball,screen } = gameDefinitions;
+        const { topWall, bottomWall } = this.environment;
+
+        this.ball = this.add.rectangle(
+            screen.width / 2,
+            screen.height / 2,
+            ball.size,
+            ball.size,
+            ball.color,
+        );
+
+        this.physics.add.existing(this.ball);
+
+        this.physics.add.collider(this.ball, topWall);
+        this.physics.add.collider(this.ball, bottomWall);
+
+        const body = this.ball.body as Phaser.Physics.Arcade.Body;
+
+        body.velocity.x = 50;
+        body.velocity.y = -60;
+        body.bounce.x = 1.1;
+        body.bounce.y = 1.1;
+    }
+
+    getPaddle(position: PlayerPosition): Paddle {
+        const { screen, paddle } =  gameDefinitions;
+
+        const colliderTop = (paddle, wall) => {
+            paddle.y = wall.y + wall.height + paddle.height / 2 + 1;
+        }
+        const colliderBottom = (paddle, wall) => {
+            paddle.y = wall.y - (paddle.height / 2 + 1);
+        }
+
+        const coordX = position == 'a' ? (2 * screen.padding) : (screen.width - 2 * screen.padding);
+
+        const paddleGO: Paddle = this.add.rectangle(
+            coordX,
+            screen.height / 2,
+            paddle.thickness,
+            paddle.length,
+            this.position === position ? paddle.playerColor : paddle.color,
+        );
+
+        this.physics.add.existing(paddleGO);
+
+        const body = paddleGO.body as Phaser.Physics.Arcade.Body;
+
+        body.pushable = false;
+        body.bounce.y = 0;
+
+        const { topWall, bottomWall } = this.environment;
+
+        this.physics.add.collider(paddleGO, topWall, colliderTop);
+        this.physics.add.collider(paddleGO, bottomWall, colliderBottom);
+        this.physics.add.collider(this.ball, paddleGO);
+
+        return paddleGO;
     }
 }

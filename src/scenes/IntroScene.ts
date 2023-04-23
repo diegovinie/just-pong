@@ -1,6 +1,9 @@
 import * as Phaser from 'phaser';
+import { PlayerPosition, PlayDefinitions } from '../definitions';
 
 export let ws: WebSocket;
+
+type RunGame = (message: PlayDefinitions) => void;
 
 interface IButtonTextProps {
     size?: number;
@@ -23,9 +26,8 @@ export class IntroScene extends Phaser.Scene {
     }
 
     create() {
-        const runGame = message => {
-            console.log('run scene');
-            this.scene.run('Play', message);
+        const runGame: RunGame = def => {
+            this.scene.run('Play', def);
         };
 
         this.connectButton = this.createTextButton(60, 40, 'Start', {
@@ -65,7 +67,7 @@ export class IntroScene extends Phaser.Scene {
         return () => text.setColor(color);
     }
 
-    connectRoom(callback) {
+    connectRoom(callback: RunGame) {
         this.connectButton.text = 'Waiting';
         this.connectButton.disableInteractive();
 
@@ -74,7 +76,7 @@ export class IntroScene extends Phaser.Scene {
         ws.onopen = (e => {
 
             ws.onmessage = msgEvent => {
-                const message = JSON.parse(msgEvent.data);
+                const message: PlayDefinitions = JSON.parse(msgEvent.data);
 
                 if (message.action === 'start') {
                     console.log(message);

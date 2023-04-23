@@ -23,4 +23,10 @@ export const gameDefinitions = {
     },
 };
 
-// export let ws: WebSocket;
+export type PlayerPosition = 'a' | 'b';
+
+export interface PlayDefinitions {
+    action: 'start';
+    position: PlayerPosition;
+    userId: number;
+}
