@@ -1,20 +1,8 @@
 import * as Phaser from 'phaser';
 import { gameDefinitions, PlayerPosition, PlayDefinitions } from '../definitions';
+import { PlayerMove, IPlayer, Paddle, GameKey } from '../definitions';
+import { EnemyAI } from '../common/EnemyAI';
 
-type Paddle = Phaser.GameObjects.Rectangle;
-type GameKey = 'keyUp' | 'keyDown';
-
-enum PlayerMove {
-    UP,
-    DOWN,
-}
-
-interface IPlayer {
-    gameObject: Paddle;
-    inputs: Record<PlayerMove, boolean> | {};
-    position: PlayerPosition;
-    inputDef: Record<GameKey, Phaser.Input.Keyboard.Key>;
-}
 
 class SocketEmulator {
     onmessage: (ev: { data: string; }) => void;
@@ -23,6 +11,7 @@ class SocketEmulator {
         this.onmessage({ data });
     }
 }
+
 
 type GameComm = WebSocket | SocketEmulator;
 
@@ -35,6 +24,7 @@ export class PlayScene extends Phaser.Scene {
     tickerId: number; // NodeJS.Timer;
     static TICK: number = 100;
     socket: GameComm;
+    enemy: EnemyAI;
 
     constructor(){
         super('Play');
@@ -51,6 +41,7 @@ export class PlayScene extends Phaser.Scene {
 
         } else if (def.type === 'single') {
             this.socket = new SocketEmulator();
+            this.enemy = new EnemyAI(this);
         }
 
         this.position = def.position;
@@ -96,6 +87,11 @@ export class PlayScene extends Phaser.Scene {
             a: { gameObject: paddleA, inputs: {}, position: 'a', inputDef: this.createInputDef('a') },
             b: { gameObject: paddleB, inputs: {}, position: 'b', inputDef: this.createInputDef('b') }
         };
+
+        if (def.type === 'single') {
+            this.enemy.setPlayer(this.players.b);
+            this.enemy.start();
+        }
 
         this.startTicker();
 

@@ -23,6 +23,22 @@ export const gameDefinitions = {
     },
 };
 
+export enum PlayerMove {
+    UP,
+    DOWN,
+}
+
+export type Paddle = Phaser.GameObjects.Rectangle;
+
+export type GameKey = 'keyUp' | 'keyDown';
+
+export interface IPlayer {
+    gameObject: Paddle;
+    inputs: Record<PlayerMove, boolean> | {};
+    position: PlayerPosition;
+    inputDef: Record<GameKey, Phaser.Input.Keyboard.Key>;
+}
+
 export type PlayerPosition = 'a' | 'b';
 
 export interface ISingleGame {
