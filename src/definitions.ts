@@ -21,6 +21,7 @@ export const gameDefinitions = {
         size: 20,
         color: 0xffF0ff,
     },
+    tick: 100,
 };
 
 export enum PlayerMove {
@@ -53,3 +54,25 @@ export interface IMultiplayerGame {
     socket: WebSocket;
 }
 export type PlayDefinitions = ISingleGame | IMultiplayerGame;
+
+export interface IConnector {
+    onmessage: (ev: { data: string; }) => void;
+    send(data: string): void;
+}
+
+export type GameComm = WebSocket | IConnector;
+
+export interface ICanConnect {
+    socket: GameComm;
+}
+
+export interface IEnemyAI {}
+
+export interface IHaveEnemyAI {
+    enemy: IEnemyAI;
+}
+
+export interface IPong {
+    ball: Phaser.GameObjects.Rectangle;
+    environment: Record<string, Phaser.GameObjects.Rectangle>;
+}

@@ -40,7 +40,6 @@ export class IntroScene extends Phaser.Scene {
             style: {},
         });
 
-
         this.connectButton = this.createTextButton(120, 40, 'Multiplayer', {
             onClick: () => this.connectRoom(runGame),
             color: '#ffaaff',
@@ -48,7 +47,6 @@ export class IntroScene extends Phaser.Scene {
             pressedColor: '#4400ff',
             style: {},
         });
-
     }
 
     createTextButton(x: number, y: number, text: string, props: IButtonTextProps): Phaser.GameObjects.Text {

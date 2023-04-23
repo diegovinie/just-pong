@@ -1,13 +1,14 @@
-import { PlayScene } from "../scenes/PlayScene";
-import { PlayerMove, IPlayer } from "../definitions";
+import { PlayerMove, IPlayer, ICanConnect, IHaveEnemyAI, IPong, gameDefinitions, IEnemyAI } from "../definitions";
 
-export class EnemyAI {
+interface IScene extends Phaser.Scene, ICanConnect, IHaveEnemyAI, IPong {}
+
+export class EnemyAI implements IEnemyAI {
     tickerId: number;
-    scene: PlayScene;
+    scene: IScene;
     player: IPlayer;
     hasActions: boolean;
 
-    constructor(scene: PlayScene) {
+    constructor(scene: IScene) {
         this.scene = scene;
     }
 
@@ -45,6 +46,6 @@ export class EnemyAI {
             if (this.hasActions) {
                 this.publishActions();
             }
-        }, PlayScene.TICK * (8/9));
+        }, gameDefinitions.tick * (8/9));
     }
 }

@@ -1,28 +1,24 @@
 import * as Phaser from 'phaser';
-import { gameDefinitions, PlayerPosition, PlayDefinitions } from '../definitions';
+import {
+    gameDefinitions,
+    PlayerPosition,
+    PlayDefinitions,
+    IPong,
+    ICanConnect,
+    IHaveEnemyAI,
+    GameComm
+} from '../definitions';
 import { PlayerMove, IPlayer, Paddle, GameKey } from '../definitions';
 import { EnemyAI } from '../common/EnemyAI';
+import { SocketEmulator } from '../common/SocketEmulator';
 
-
-class SocketEmulator {
-    onmessage: (ev: { data: string; }) => void;
-
-    send(data: string) {
-        this.onmessage({ data });
-    }
-}
-
-
-type GameComm = WebSocket | SocketEmulator;
-
-export class PlayScene extends Phaser.Scene {
+export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHaveEnemyAI {
     environment: Record<string, Phaser.GameObjects.Rectangle>;
     players: Record<PlayerPosition, IPlayer>;
     ball: Phaser.GameObjects.Rectangle;
     position: PlayerPosition;
     userId: number;
     tickerId: number; // NodeJS.Timer;
-    static TICK: number = 100;
     socket: GameComm;
     enemy: EnemyAI;
 
@@ -130,12 +126,12 @@ export class PlayScene extends Phaser.Scene {
                 this.socket.send(JSON.stringify({ action: 'update', player: this.position, inputs }));
             }
 
-        }, PlayScene.TICK);
+        }, gameDefinitions.tick);
     }
 
     movePlayers() {
         const { paddle } = gameDefinitions;
-        const duration = PlayScene.TICK;
+        const duration = gameDefinitions.tick;
 
         for (const pos in this.players) {
             const player = this.players[pos];
