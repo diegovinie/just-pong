@@ -74,7 +74,7 @@ export interface IHaveEnemyAI {
 
 export interface IPong {
     ball: Phaser.GameObjects.Rectangle;
-    environment: Record<string, Phaser.GameObjects.Rectangle>;
+    environment: Record<string, Phaser.GameObjects.GameObject>;
 }
 
 type ClickCallback = () => void;

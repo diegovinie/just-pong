@@ -13,7 +13,7 @@ import { EnemyAI } from '../common/EnemyAI';
 import { SocketEmulator } from '../common/SocketEmulator';
 
 export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHaveEnemyAI {
-    environment: Record<string, Phaser.GameObjects.Rectangle>;
+    environment: Record<string, Phaser.GameObjects.GameObject>;
     players: Record<PlayerPosition, IPlayer>;
     ball: Phaser.GameObjects.Rectangle;
     position: PlayerPosition;
@@ -21,6 +21,8 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
     tickerId: number; // NodeJS.Timer;
     socket: GameComm;
     enemy: EnemyAI;
+    onPlay: boolean;
+    score = { a: 0, b: 0 };
 
     constructor(){
         super('Play');
@@ -69,6 +71,9 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
 
         this.createBall();
 
+        this.environment.goalA = this.getGoal('a');
+        this.environment.goalB = this.getGoal('b');
+
         const paddleA = this.getPaddle('a');
         const paddleB = this.getPaddle('b');
 
@@ -87,9 +92,11 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
         }, this);
 
         this.players = {
-            a: { gameObject: paddleA, inputs: {}, position: 'a', inputDef: this.createInputDef('a') },
-            b: { gameObject: paddleB, inputs: {}, position: 'b', inputDef: this.createInputDef('b') }
+            a: { gameObject: paddleA, inputs: {}, position: 'a', inputDef: this.getInputDef('a') },
+            b: { gameObject: paddleB, inputs: {}, position: 'b', inputDef: this.getInputDef('b') }
         };
+
+        this.startGame();
 
         if (def.type === 'single') {
             this.enemy.setPlayer(this.players.b);
@@ -163,7 +170,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
         }
     }
 
-    createInputDef(position: PlayerPosition): Record<GameKey, Phaser.Input.Keyboard.Key> {
+    getInputDef(position: PlayerPosition): Record<GameKey, Phaser.Input.Keyboard.Key> {
         switch (position) {
             case 'b':
                 return {
@@ -201,8 +208,6 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
 
         const body = this.ball.body as Phaser.Physics.Arcade.Body;
 
-        body.velocity.x = 50;
-        body.velocity.y = -60;
         body.bounce.x = 1.1;
         body.bounce.y = 1.1;
     }
@@ -241,5 +246,49 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
         this.physics.add.collider(this.ball, paddleGO);
 
         return paddleGO;
+    }
+
+    getGoal(position: PlayerPosition): Phaser.GameObjects.Rectangle {
+        const { screen } = gameDefinitions;
+        const width = 10;
+        const coordX = position === 'b' ? 0 : screen.width - width;
+
+        const onBallCollide = () => {
+            if (this.onPlay) {
+                this.onPlay = false;
+                this.score[position]++;
+                console.log(this.score);
+
+                setTimeout(this.startGame.bind(this), 3000);
+            }
+        }
+
+        const goal = this.add.rectangle(
+            coordX,
+            0,
+            width,
+            screen.height,
+            0xbada55,
+        ).setOrigin(0, 0);
+
+        this.physics.add.existing(goal);
+
+        this.physics.add.overlap(this.ball, goal, onBallCollide, null, this);
+
+        return goal;
+    }
+
+    startGame() {
+        const { screen } = gameDefinitions;
+
+        this.onPlay = true;
+
+        this.ball.x = screen.width / 2;
+        this.ball.y = screen.height / 2;
+
+        const body = this.ball.body as Phaser.Physics.Arcade.Body;
+
+        body.velocity.x = 50 * (Math.random() > 0.5 ? 1 : -1);
+        body.velocity.y = -60;
     }
 }
