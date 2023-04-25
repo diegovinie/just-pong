@@ -79,6 +79,13 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             Phaser.Input.Keyboard.KeyCodes.S,
         ]);
 
+        const pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+
+        pauseKey.on('down', () => {
+            this.scene.launch('Paused')
+            this.scene.pause();
+        }, this);
+
         this.players = {
             a: { gameObject: paddleA, inputs: {}, position: 'a', inputDef: this.createInputDef('a') },
             b: { gameObject: paddleB, inputs: {}, position: 'b', inputDef: this.createInputDef('b') }
