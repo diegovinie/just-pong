@@ -76,3 +76,13 @@ export interface IPong {
     ball: Phaser.GameObjects.Rectangle;
     environment: Record<string, Phaser.GameObjects.Rectangle>;
 }
+
+type ClickCallback = () => void;
+
+export interface IClickable {
+    color: string;
+    hoverColor: string;
+    pressedColor: string;
+    onClick: ClickCallback;
+    onPointerAction(text: Phaser.GameObjects.GameObject, color: string): ClickCallback;
+}
