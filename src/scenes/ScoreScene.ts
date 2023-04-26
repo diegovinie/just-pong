@@ -1,7 +1,9 @@
 import * as Phaser from 'phaser';
 import { TextButton } from '../components/TextButton';
-import { gameDefinitions } from '../definitions';
+import { gameDefinitions, IPong } from '../definitions';
 import { JPong } from '../common/Grid';
+
+interface IPlayScene extends Phaser.Scene, IPong {}
 
 interface IScore {
     a: number;
@@ -20,14 +22,15 @@ export class ScoreScene extends Phaser.Scene {
 
     create(score: IScore) {
         const { screen, theme } = gameDefinitions;
-        console.log('ScoreScene', score);
 
         const textStyle: Phaser.Types.GameObjects.Text.TextStyle = {
             fontSize: '32px',
         };
 
         const onContinue = () => {
-
+            const playScene = this.scene.get('Play') as IPlayScene;
+            playScene.startGame();
+            this.scene.stop();
         };
 
         const grid = new JPong.Grid(this, 2, 3, {
@@ -54,10 +57,14 @@ export class ScoreScene extends Phaser.Scene {
             [2, 3, this.scoreB],
         ]);
 
-        this.continueButton = TextButton.create(this, halfWidth, halfHeight + 60, 'CONTINUE', {
+        this.continueButton = TextButton.create(this, halfWidth, halfHeight + 60, 'CONTINUE (SPACE)', {
             onClick: onContinue,
         });
 
         this.continueButton.setOrigin(0.5, 0.5);
+
+        const continueKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        continueKey.on('down', onContinue, this);
     }
 }

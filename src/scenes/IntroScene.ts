@@ -1,7 +1,6 @@
 import * as Phaser from 'phaser';
 import { PlayDefinitions } from '../definitions';
 import { TextButton } from '../components/TextButton';
-import { JPong } from '../common/Grid';
 
 type RunGame = (message: PlayDefinitions) => void;
 
@@ -21,9 +20,6 @@ export class IntroScene extends Phaser.Scene {
         const runGame: RunGame = def => {
             this.scene.run('Play', def);
         };
-
-        this.scene.run('Score', { a: 4 , b: 0 });
-        this.scene.stop();
 
         this.singleButton = TextButton.create(this, 20, 40, 'Single', {
             onClick: () => {
