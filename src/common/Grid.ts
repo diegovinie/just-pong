@@ -55,7 +55,7 @@ export namespace JPong {
             this.grid = grid
             this.recalculateCoords();
 
-            console.log('Grid', this.grid);
+            // console.log('Grid', this.grid);
         }
 
         add(go: IGridObject, row: Row, col: Col) {

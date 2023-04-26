@@ -268,6 +268,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             width,
             screen.height,
             0xbada55,
+            0
         ).setOrigin(0, 0);
 
         this.physics.add.existing(goal);
