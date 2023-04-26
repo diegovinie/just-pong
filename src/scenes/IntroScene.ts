@@ -1,11 +1,13 @@
 import * as Phaser from 'phaser';
 import { PlayDefinitions } from '../definitions';
 import { TextButton } from '../components/TextButton';
+import { JPong } from '../common/Grid';
 
 type RunGame = (message: PlayDefinitions) => void;
 
 export class IntroScene extends Phaser.Scene {
-    connectButton: Phaser.GameObjects.Text;
+    singleButton: Phaser.GameObjects.Text;
+    multiplayerButton: Phaser.GameObjects.Text;
 
     constructor() {
         super('Intro');
@@ -20,7 +22,10 @@ export class IntroScene extends Phaser.Scene {
             this.scene.run('Play', def);
         };
 
-        this.connectButton = TextButton.create(this, 20, 40, 'Single', {
+        this.scene.run('Score', { a: 4 , b: 0 });
+        this.scene.stop();
+
+        this.singleButton = TextButton.create(this, 20, 40, 'Single', {
             onClick: () => {
                 runGame({ type: 'single', position: 'a' });
             },
@@ -30,7 +35,7 @@ export class IntroScene extends Phaser.Scene {
             style: {},
         });
 
-        this.connectButton = TextButton.create(this, 120, 40, 'Multiplayer', {
+        this.multiplayerButton = TextButton.create(this, 120, 40, 'Multiplayer', {
             onClick: () => this.connectRoom(runGame),
             color: '#ffaaff',
             hoverColor: '#ff0000',
@@ -40,8 +45,8 @@ export class IntroScene extends Phaser.Scene {
     }
 
     connectRoom(callback: RunGame) {
-        this.connectButton.text = 'Waiting';
-        this.connectButton.disableInteractive();
+        this.multiplayerButton.text = 'Waiting';
+        this.multiplayerButton.disableInteractive();
 
         const ws = new WebSocket(`ws://localhost:3000?userId=${Date.now()}`);
 

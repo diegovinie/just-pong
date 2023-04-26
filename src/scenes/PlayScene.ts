@@ -258,8 +258,12 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
                 this.onPlay = false;
                 this.score[position]++;
                 console.log(this.score);
+                this.scene.launch('Score', this.score);
 
-                setTimeout(this.startGame.bind(this), 3000);
+                setTimeout(() => {
+                    this.startGame();
+                    this.scene.stop('Score');
+                }, 3000);
             }
         }
 
