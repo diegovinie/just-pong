@@ -19,7 +19,7 @@ export class ScoreScene extends Phaser.Scene {
     }
 
     create(score: IScore) {
-        const { screen } = gameDefinitions;
+        const { screen, theme } = gameDefinitions;
         console.log('ScoreScene', score);
 
         const textStyle: Phaser.Types.GameObjects.Text.TextStyle = {
@@ -39,7 +39,7 @@ export class ScoreScene extends Phaser.Scene {
         const halfWidth = screen.width / 2;
         const halfHeight = screen.height / 2;
 
-        this.board = this.add.rectangle(halfWidth, halfHeight, halfWidth, halfHeight, 0x000000, 0.5);
+        this.board = this.add.rectangle(halfWidth, halfHeight, halfWidth, halfHeight, theme.panel, 1);
 
         const playerA = this.add.text(0, 0, 'A', textStyle);
         const playerB = this.add.text(0, 0, 'B', textStyle);
@@ -56,9 +56,6 @@ export class ScoreScene extends Phaser.Scene {
 
         this.continueButton = TextButton.create(this, halfWidth, halfHeight + 60, 'CONTINUE', {
             onClick: onContinue,
-            color: 'white',
-            hoverColor: 'yellow',
-            // style: textStyle,
         });
 
         this.continueButton.setOrigin(0.5, 0.5);

@@ -23,9 +23,6 @@ export class PausedScene extends Phaser.Scene {
 
 
         const resumeButton = TextButton.create(this, screen.width / 2, screen.height / 2 + 10, 'RESUME (P)', {
-            color: '#AAAAAA',
-            hoverColor: 'white',
-            pressedColor: 'green',
             onClick: onResume,
             style: {
                 fontSize: '18px',

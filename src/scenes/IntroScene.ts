@@ -29,17 +29,11 @@ export class IntroScene extends Phaser.Scene {
             onClick: () => {
                 runGame({ type: 'single', position: 'a' });
             },
-            color: '#ffaaff',
-            hoverColor: '#ff0000',
-            pressedColor: '#4400ff',
             style: {},
         });
 
         this.multiplayerButton = TextButton.create(this, 120, 40, 'Multiplayer', {
             onClick: () => this.connectRoom(runGame),
-            color: '#ffaaff',
-            hoverColor: '#ff0000',
-            pressedColor: '#4400ff',
             style: {},
         });
     }

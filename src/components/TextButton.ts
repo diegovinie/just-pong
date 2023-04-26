@@ -1,18 +1,22 @@
 import * as Phaser from 'phaser';
-import { IClickable } from '../definitions';
+import { IClickable, gameDefinitions } from '../definitions';
+
+const { theme } = gameDefinitions;
+
+const hexToString = (hex: number) => `#${hex.toString(16)}`;
 
 export interface ITextButtonProps {
-    color?: string;
-    hoverColor?: string;
-    pressedColor?: string;
+    color?: number;
+    hoverColor?: number;
+    pressedColor?: number;
     onClick?: () => void;
     style?: Phaser.Types.GameObjects.Text.TextStyle;
 }
 
 export class TextButton extends Phaser.GameObjects.Text implements IClickable {
-    color: string;
-    hoverColor: string;
-    pressedColor: string;
+    color: number = theme.secondary;
+    hoverColor: number = theme.bright;
+    pressedColor: number = theme.active;
     onClick: () => void;
 
     constructor(scene: Phaser.Scene, x: number, y: number, text: string, props: ITextButtonProps) {
@@ -40,18 +44,18 @@ export class TextButton extends Phaser.GameObjects.Text implements IClickable {
 
         scene.add.existing(this);
 
-        this.setColor(color);
+        this.setColor(hexToString(this.color));
         this.setInteractive();
 
         this.on('pointerover', this.onPointerAction(this, this.hoverColor), scene)
             .on('pointerout', this.onPointerAction(this, this.color), scene)
             .on('pointerdown', this.onPointerAction(this, this.pressedColor), scene)
             .on('pointerup', onClick, scene)
-            .on('pointerup', this.onPointerAction(this, hoverColor), scene);
+            .on('pointerup', this.onPointerAction(this, this.hoverColor), scene);
     }
 
-    onPointerAction(text: Phaser.GameObjects.Text, color: string): () => void {
-        return () => { text.setColor(color); }
+    onPointerAction(text: Phaser.GameObjects.Text, color: number): () => void {
+        return () => { text.setColor(hexToString(color)); }
     }
 
     static create(scene: Phaser.Scene, x: number, y: number, text: string, props: ITextButtonProps): TextButton {

@@ -1,27 +1,37 @@
+export const theme = {
+    bright: 0xfffffc,
+    primary: 0x95B2B0,
+    secondary: 0x647AA3,
+    active: 0xC6EBBE,
+    panel: 0x334195,
+    bg: 0x020887,
+};
+
 export const gameDefinitions = {
     screen: {
         width: 600,
         height: 400,
         padding: 20,
-        bgColor: 0x002200,
+        bgColor: theme.bg,
     },
     walls: {
         thickness: 20,
-        color: 0xffF0ff,
+        color: theme.primary,
     },
     paddle: {
         length: 80,
         thickness: 20,
-        color: 0xffF0ff,
-        playerColor: 0xaaffff,
+        color: theme.primary,
+        playerColor: theme.active,
         speed: 100,
     },
 
     ball: {
         size: 20,
-        color: 0xffF0ff,
+        color: theme.primary,
     },
     tick: 100,
+    theme,
 };
 
 export enum PlayerMove {
@@ -80,9 +90,9 @@ export interface IPong {
 type ClickCallback = () => void;
 
 export interface IClickable {
-    color: string;
-    hoverColor: string;
-    pressedColor: string;
+    color: number;
+    hoverColor: number;
+    pressedColor: number;
     onClick: ClickCallback;
-    onPointerAction(text: Phaser.GameObjects.GameObject, color: string): ClickCallback;
+    onPointerAction(text: Phaser.GameObjects.GameObject, color: number): ClickCallback;
 }
