@@ -11,6 +11,7 @@ import {
 import { PlayerMove, IPlayer, Paddle, GameKey } from '../definitions';
 import { EnemyAI } from '../common/EnemyAI';
 import { SocketEmulator } from '../common/SocketEmulator';
+import { TouchInput } from '../components/TouchInput';
 
 export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHaveEnemyAI {
     environment: Record<string, Phaser.GameObjects.GameObject>;
@@ -24,6 +25,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
     onPlay: boolean;
     score = { a: 0, b: 0 };
     sounds: Record<string, Phaser.Sound.HTML5AudioSound>;
+    touchInput: TouchInput;
 
     constructor(){
         super('Play');
@@ -112,6 +114,8 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             this.enemy.start();
         }
 
+        this.touchInput = new TouchInput(this, { x: 50, y: screen.height - 100});
+
         this.startTicker();
 
         this.socket.onmessage = msgEvent => {
@@ -135,12 +139,12 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             let hadAction = false;
             const player: IPlayer = this.players[this.position];
 
-            if (player.inputDef.keyUp.isDown) {
+            if (player.inputDef.keyUp.isDown || this.touchInput.buttonUp.isDown) {
                 inputs[PlayerMove.DOWN] = true;
                 hadAction = true;
             }
 
-            if (player.inputDef.keyDown.isDown) {
+            if (player.inputDef.keyDown.isDown || this.touchInput.buttonDown.isDown) {
                 inputs[PlayerMove.UP] = true;
                 hadAction = true;
             }
