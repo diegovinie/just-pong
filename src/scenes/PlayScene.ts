@@ -23,13 +23,16 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
     enemy: EnemyAI;
     onPlay: boolean;
     score = { a: 0, b: 0 };
+    sounds: Record<string, Phaser.Sound.HTML5AudioSound>;
 
     constructor(){
         super('Play');
     }
 
     preload() {
-
+        this.load.audio('bounce', 'assets/bounce.wav');
+        this.load.audio('hit', 'assets/hit.wav');
+        this.load.audio('score', 'assets/score.wav');
     }
 
     create(def: PlayDefinitions) {
@@ -45,6 +48,12 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
         this.position = def.position;
 
         const { screen, walls, paddle, ball } = gameDefinitions;
+
+        this.sounds = {
+            bounce: this.sound.add('bounce') as Phaser.Sound.HTML5AudioSound,
+            hit: this.sound.add('hit') as Phaser.Sound.HTML5AudioSound,
+            score: this.sound.add('score') as Phaser.Sound.HTML5AudioSound,
+        };
 
         const bg = this.add.rectangle(0, 0, screen.width, screen.height, screen.bgColor).setOrigin(0, 0);
 
@@ -193,6 +202,10 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
         const { ball,screen } = gameDefinitions;
         const { topWall, bottomWall } = this.environment;
 
+        const onWallCollide = () => {
+            this.sounds.bounce.play();
+        };
+
         this.ball = this.add.rectangle(
             screen.width / 2,
             screen.height / 2,
@@ -203,8 +216,8 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
 
         this.physics.add.existing(this.ball);
 
-        this.physics.add.collider(this.ball, topWall);
-        this.physics.add.collider(this.ball, bottomWall);
+        this.physics.add.collider(this.ball, topWall, onWallCollide);
+        this.physics.add.collider(this.ball, bottomWall, onWallCollide);
 
         const body = this.ball.body as Phaser.Physics.Arcade.Body;
 
@@ -217,10 +230,15 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
 
         const colliderTop = (paddle, wall) => {
             paddle.y = wall.y + wall.height + paddle.height / 2 + 1;
-        }
+        };
+
         const colliderBottom = (paddle, wall) => {
             paddle.y = wall.y - (paddle.height / 2 + 1);
-        }
+        };
+
+        const onBallCollide = () => {
+            this.sounds.hit.play();
+        };
 
         const coordX = position == 'a' ? (2 * screen.padding) : (screen.width - 2 * screen.padding);
 
@@ -243,7 +261,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
 
         this.physics.add.collider(paddleGO, topWall, colliderTop);
         this.physics.add.collider(paddleGO, bottomWall, colliderBottom);
-        this.physics.add.collider(this.ball, paddleGO);
+        this.physics.add.collider(this.ball, paddleGO, onBallCollide);
 
         return paddleGO;
     }
@@ -257,6 +275,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             if (this.onPlay) {
                 this.onPlay = false;
                 this.score[position]++;
+                this.sounds.score.play();
 
                 this.scene.launch('Score', this.score);
             }

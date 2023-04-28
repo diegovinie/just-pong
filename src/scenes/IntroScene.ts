@@ -14,7 +14,7 @@ export class IntroScene extends Phaser.Scene {
     }
 
     preload() {
-
+        this.load.audio('hit', 'assets/hit.wav');
     }
 
     create() {
@@ -23,6 +23,8 @@ export class IntroScene extends Phaser.Scene {
             fontFamily: 'ArcadeFont',
             fontSize: '28px',
         };
+
+        const sfx = this.sound.add('hit') as Phaser.Sound.HTML5AudioSound;
 
         const runGame: RunGame = def => {
             this.scene.run('Play', def);
@@ -40,11 +42,13 @@ export class IntroScene extends Phaser.Scene {
                 runGame({ type: 'single', position: 'a' });
             },
             style: buttonStyle,
+            sfx: sfx,
         });
 
         this.multiplayerButton = TextButton.create(this, 0, 0, 'Multiplayer', {
             onClick: () => this.connectRoom(runGame),
             style: buttonStyle,
+            sfx: sfx,
         });
 
         const grid = new JPong.Grid(this, 1, 2, {

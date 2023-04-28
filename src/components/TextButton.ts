@@ -11,6 +11,7 @@ export interface ITextButtonProps {
     pressedColor?: number;
     onClick?: () => void;
     style?: Phaser.Types.GameObjects.Text.TextStyle;
+    sfx?: Phaser.Sound.HTML5AudioSound;
 }
 
 export class TextButton extends Phaser.GameObjects.Text implements IClickable {
@@ -18,6 +19,7 @@ export class TextButton extends Phaser.GameObjects.Text implements IClickable {
     hoverColor: number = theme.bright;
     pressedColor: number = theme.active;
     onClick: () => void;
+    sfx?: Phaser.Sound.HTML5AudioSound;
 
     constructor(scene: Phaser.Scene, x: number, y: number, text: string, props: ITextButtonProps) {
         const {
@@ -26,6 +28,7 @@ export class TextButton extends Phaser.GameObjects.Text implements IClickable {
             hoverColor,
             pressedColor,
             onClick,
+            sfx,
         } = props;
 
         super(scene, x, y, text, style);
@@ -39,6 +42,9 @@ export class TextButton extends Phaser.GameObjects.Text implements IClickable {
         if (pressedColor)
             this.pressedColor = pressedColor;
 
+        if (sfx)
+            this.sfx = sfx;
+
         if (onClick)
             this.onClick = onClick;
 
@@ -50,6 +56,7 @@ export class TextButton extends Phaser.GameObjects.Text implements IClickable {
         this.on('pointerover', this.onPointerAction(this, this.hoverColor), scene)
             .on('pointerout', this.onPointerAction(this, this.color), scene)
             .on('pointerdown', this.onPointerAction(this, this.pressedColor), scene)
+            .on('pointerdown', () => { this.sfx?.play(); }, scene)
             .on('pointerup', onClick, scene)
             .on('pointerup', this.onPointerAction(this, this.hoverColor), scene);
     }
