@@ -19,13 +19,18 @@ export class IntroScene extends Phaser.Scene {
 
     create() {
         const { screen } = gameDefinitions;
+        const buttonStyle: Phaser.Types.GameObjects.Text.TextStyle = {
+            fontFamily: 'ArcadeFont',
+            fontSize: '28px',
+        };
 
         const runGame: RunGame = def => {
             this.scene.run('Play', def);
         };
 
         const title = this.add.text(screen.width / 2, screen.height / 2 - 50, 'Just Pong!', {
-            fontSize: '40px',
+            fontSize: '56px',
+            fontFamily: 'ArcadeFont',
         });
 
         title.setOrigin(0.5, 0.5);
@@ -34,12 +39,12 @@ export class IntroScene extends Phaser.Scene {
             onClick: () => {
                 runGame({ type: 'single', position: 'a' });
             },
-            style: {},
+            style: buttonStyle,
         });
 
         this.multiplayerButton = TextButton.create(this, 0, 0, 'Multiplayer', {
             onClick: () => this.connectRoom(runGame),
-            style: {},
+            style: buttonStyle,
         });
 
         const grid = new JPong.Grid(this, 1, 2, {
@@ -49,7 +54,7 @@ export class IntroScene extends Phaser.Scene {
                 y: screen.height / 2,
             },
             cellDimensions: {
-                width: 120,
+                width: 140,
                 height: 30,
             },
         });

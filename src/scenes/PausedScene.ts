@@ -16,16 +16,18 @@ export class PausedScene extends Phaser.Scene {
         };
 
         const paused = this.add.text(screen.width / 2, screen.height / 2 - 20, 'PAUSED', {
-            fontSize: '40px',
+            fontSize: '48px',
+            fontFamily: 'ArcadeFont',
         });
 
         paused.setOrigin(0.5, 0.5);
 
 
-        const resumeButton = TextButton.create(this, screen.width / 2, screen.height / 2 + 10, 'RESUME (P)', {
+        const resumeButton = TextButton.create(this, screen.width / 2, screen.height / 2 + 20, 'RESUME (P)', {
             onClick: onResume,
             style: {
-                fontSize: '18px',
+                fontSize: '28px',
+                fontFamily: 'ArcadeFont',
             }
         });
 

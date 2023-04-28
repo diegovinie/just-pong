@@ -24,7 +24,8 @@ export class ScoreScene extends Phaser.Scene {
         const { screen, theme } = gameDefinitions;
 
         const textStyle: Phaser.Types.GameObjects.Text.TextStyle = {
-            fontSize: '32px',
+            fontSize: '40px',
+            fontFamily: 'ArcadeFont',
         };
 
         const onContinue = () => {
@@ -59,6 +60,10 @@ export class ScoreScene extends Phaser.Scene {
 
         this.continueButton = TextButton.create(this, halfWidth, halfHeight + 60, 'CONTINUE (SPACE)', {
             onClick: onContinue,
+            style: {
+                fontSize: '28px',
+                fontFamily: 'ArcadeFont',
+            }
         });
 
         this.continueButton.setOrigin(0.5, 0.5);
