@@ -24,8 +24,8 @@ export class TouchInput {
         this.scene = scene;
         this.position = position;
 
-        this.buttonUp = this.createButton({ x: position.x, y: position.y - 30 }, 25, Math.PI);
-        this.buttonDown = this.createButton({ x: position.x, y: position.y + 30 }, 25, 0);
+        this.buttonUp = this.createButton({ x: position.x, y: position.y - 35 }, 30, Math.PI);
+        this.buttonDown = this.createButton({ x: position.x, y: position.y + 35 }, 30, 0);
     }
 
 

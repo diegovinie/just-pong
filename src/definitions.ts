@@ -9,7 +9,21 @@ export const theme = {
 
 export const gameDefinitions = {
     screen: {
-        width: 600,
+        landscape: {
+            width: 600,
+            height: 400,
+        },
+        vertical: {
+            width: 400,
+            height: 600,
+        },
+        current: {
+            width: 600,
+            height: 400,
+        }
+    },
+    field: {
+        width: 550,
         height: 400,
         padding: 20,
         bgColor: theme.bg,

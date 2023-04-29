@@ -8,14 +8,14 @@ export class PausedScene extends Phaser.Scene {
     }
 
     create() {
-        const { screen } = gameDefinitions;
+        const { field } = gameDefinitions;
 
         const onResume = () => {
             this.scene.resume('Play');
             this.scene.stop();
         };
 
-        const paused = this.add.text(screen.width / 2, screen.height / 2 - 20, 'PAUSED', {
+        const paused = this.add.text(field.width / 2, field.height / 2 - 20, 'PAUSED', {
             fontSize: '48px',
             fontFamily: 'ArcadeFont',
         });
@@ -23,7 +23,7 @@ export class PausedScene extends Phaser.Scene {
         paused.setOrigin(0.5, 0.5);
 
 
-        const resumeButton = TextButton.create(this, screen.width / 2, screen.height / 2 + 20, 'RESUME (P)', {
+        const resumeButton = TextButton.create(this, field.width / 2, field.height / 2 + 20, 'RESUME (P)', {
             onClick: onResume,
             style: {
                 fontSize: '28px',

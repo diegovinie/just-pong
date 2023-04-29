@@ -21,7 +21,7 @@ export class ScoreScene extends Phaser.Scene {
     }
 
     create(score: IScore) {
-        const { screen, theme } = gameDefinitions;
+        const { field, theme } = gameDefinitions;
 
         const textStyle: Phaser.Types.GameObjects.Text.TextStyle = {
             fontSize: '40px',
@@ -36,12 +36,12 @@ export class ScoreScene extends Phaser.Scene {
 
         const grid = new JPong.Grid(this, 2, 3, {
             // widthPlaceholder: true,
-            center: { x: screen.width / 2, y: screen.height / 2 - 20},
+            center: { x: field.width / 2, y: field.height / 2 - 20},
             cellDimensions: { width: 80, height: 60 },
         })
 
-        const halfWidth = screen.width / 2;
-        const halfHeight = screen.height / 2;
+        const halfWidth = field.width / 2;
+        const halfHeight = field.height / 2;
 
         this.board = this.add.rectangle(halfWidth, halfHeight, halfWidth, halfHeight, theme.panel, 1);
 

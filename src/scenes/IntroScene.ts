@@ -30,7 +30,7 @@ export class IntroScene extends Phaser.Scene {
             this.scene.run('Play', def);
         };
 
-        const title = this.add.text(screen.width / 2, screen.height / 2 - 50, 'Just Pong!', {
+        const title = this.add.text(screen.current.width / 2, screen.current.height / 2 - 50, 'Just Pong!', {
             fontSize: '56px',
             fontFamily: 'ArcadeFont',
         });
@@ -54,8 +54,8 @@ export class IntroScene extends Phaser.Scene {
         const grid = new JPong.Grid(this, 1, 2, {
             widthPlaceholder: true,
             center: {
-                x: screen.width / 2,
-                y: screen.height / 2,
+                x: screen.current.width / 2,
+                y: screen.current.height / 2,
             },
             cellDimensions: {
                 width: 140,

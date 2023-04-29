@@ -12,8 +12,8 @@ const config = {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         parent: 'thegame',
-        width: gameDefinitions.screen.width,
-        height: gameDefinitions.screen.height,
+        width: gameDefinitions.screen.current.width,
+        height: gameDefinitions.screen.current.height,
     },
     physics: {
         default: 'arcade',

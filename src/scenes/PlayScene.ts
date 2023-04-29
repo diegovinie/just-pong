@@ -49,7 +49,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
 
         this.position = def.position;
 
-        const { screen, walls, paddle, ball } = gameDefinitions;
+        const { screen, field, walls, paddle, ball } = gameDefinitions;
 
         this.sounds = {
             bounce: this.sound.add('bounce') as Phaser.Sound.HTML5AudioSound,
@@ -57,20 +57,20 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             score: this.sound.add('score') as Phaser.Sound.HTML5AudioSound,
         };
 
-        const bg = this.add.rectangle(0, 0, screen.width, screen.height, screen.bgColor).setOrigin(0, 0);
+        const bg = this.add.rectangle(0, 0, field.width, field.height, field.bgColor).setOrigin(0, 0);
 
         const topWall = this.add.rectangle(
-            screen.padding,
-            screen.padding,
-            screen.width - 2 * screen.padding,
+            field.padding,
+            field.padding,
+            field.width - 2 * field.padding,
             walls.thickness,
             walls.color)
             .setOrigin(0, 0);
 
         const bottomWall = this.add.rectangle(
-            screen.padding,
-            screen.height - 2 * screen.padding,
-            screen.width - 2 * screen.padding,
+            field.padding,
+            field.height - 2 * field.padding,
+            field.width - 2 * field.padding,
             walls.thickness,
             walls.color)
             .setOrigin(0, 0);
@@ -114,7 +114,10 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             this.enemy.start();
         }
 
-        this.touchInput = new TouchInput(this, { x: 50, y: screen.height - 100});
+        this.touchInput = new TouchInput(this, {
+            x:  screen.current.width - 40,
+            y: screen.current.height - 100,
+        });
 
         this.startTicker();
 
@@ -203,7 +206,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
     }
 
     createBall() {
-        const { ball,screen } = gameDefinitions;
+        const { ball, field } = gameDefinitions;
         const { topWall, bottomWall } = this.environment;
 
         const onWallCollide = () => {
@@ -211,8 +214,8 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
         };
 
         this.ball = this.add.rectangle(
-            screen.width / 2,
-            screen.height / 2,
+            field.width / 2,
+            field.height / 2,
             ball.size,
             ball.size,
             ball.color,
@@ -230,7 +233,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
     }
 
     getPaddle(position: PlayerPosition): Paddle {
-        const { screen, paddle } =  gameDefinitions;
+        const { field, paddle } =  gameDefinitions;
 
         const colliderTop = (paddle, wall) => {
             paddle.y = wall.y + wall.height + paddle.height / 2 + 1;
@@ -244,11 +247,11 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             this.sounds.hit.play();
         };
 
-        const coordX = position == 'a' ? (2 * screen.padding) : (screen.width - 2 * screen.padding);
+        const coordX = position == 'a' ? (2 * field.padding) : (field.width - 2 * field.padding);
 
         const paddleGO: Paddle = this.add.rectangle(
             coordX,
-            screen.height / 2,
+            field.height / 2,
             paddle.thickness,
             paddle.length,
             this.position === position ? paddle.playerColor : paddle.color,
@@ -271,9 +274,9 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
     }
 
     getGoal(position: PlayerPosition): Phaser.GameObjects.Rectangle {
-        const { screen } = gameDefinitions;
+        const { field } = gameDefinitions;
         const width = 10;
-        const coordX = position === 'b' ? 0 : screen.width - width;
+        const coordX = position === 'b' ? 0 : field.width - width;
 
         const onBallCollide = () => {
             if (this.onPlay) {
@@ -289,7 +292,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             coordX,
             0,
             width,
-            screen.height,
+            field.height,
             0xbada55,
             0
         ).setOrigin(0, 0);
@@ -302,12 +305,12 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
     }
 
     startGame() {
-        const { screen } = gameDefinitions;
+        const { field } = gameDefinitions;
 
         this.onPlay = true;
 
-        this.ball.x = screen.width / 2;
-        this.ball.y = screen.height / 2;
+        this.ball.x = field.width / 2;
+        this.ball.y = field.height / 2;
 
         const body = this.ball.body as Phaser.Physics.Arcade.Body;
 
