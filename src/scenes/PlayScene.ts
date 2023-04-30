@@ -135,6 +135,15 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
                 const pauseScene = this.scene.get('Paused');
                 pauseScene.scene.stop()
                 this.scene.resume();
+            } else if (message.action === 'score') {
+                this.onPlay = false;
+                this.score[message.winner]++;
+                this.sounds.score.play();
+                this.scene.launch('Score', { socket: this.socket, score: this.score });
+
+            } else if (message.action === 'continue') {
+                this.startGame();
+                this.scene.get('Score').scene.stop();
             }
         }
     }
@@ -288,10 +297,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
         const onBallCollide = () => {
             if (this.onPlay) {
                 this.onPlay = false;
-                this.score[position]++;
-                this.sounds.score.play();
-
-                this.scene.launch('Score', this.score);
+                this.socket.send(JSON.stringify({ action: 'score', winner: position }));
             }
         }
 
@@ -301,7 +307,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             width,
             field.height,
             0xbada55,
-            0
+            0.5
         ).setOrigin(0, 0);
 
         this.physics.add.existing(goal);
@@ -321,7 +327,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
 
         const body = this.ball.body as Phaser.Physics.Arcade.Body;
 
-        body.velocity.x = 50 * (Math.random() > 0.5 ? 1 : -1);
+        body.velocity.x = 50; // * (Math.random() > 0.5 ? 1 : -1);
         body.velocity.y = -60;
     }
 }

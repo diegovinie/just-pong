@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import { TextButton } from '../components/TextButton';
-import { gameDefinitions, IPong } from '../definitions';
+import { gameDefinitions, IPong, GameComm } from '../definitions';
 import { JPong } from '../common/Grid';
 
 interface IPlayScene extends Phaser.Scene, IPong {}
@@ -20,8 +20,9 @@ export class ScoreScene extends Phaser.Scene {
         super('Score');
     }
 
-    create(score: IScore) {
+    create(def: { score: IScore; socket: GameComm }) {
         const { field, theme } = gameDefinitions;
+        const { score, socket } = def;
 
         const textStyle: Phaser.Types.GameObjects.Text.TextStyle = {
             fontSize: '40px',
@@ -29,9 +30,7 @@ export class ScoreScene extends Phaser.Scene {
         };
 
         const onContinue = () => {
-            const playScene = this.scene.get('Play') as IPlayScene;
-            playScene.startGame();
-            this.scene.stop();
+            socket.send(JSON.stringify({ action: 'continue' }));
         };
 
         const grid = new JPong.Grid(this, 2, 3, {
