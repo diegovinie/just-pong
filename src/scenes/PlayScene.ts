@@ -98,8 +98,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
         const pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
         pauseKey.on('down', () => {
-            this.scene.launch('Paused')
-            this.scene.pause();
+            this.socket.send(JSON.stringify({ action: 'pause' }));
         }, this);
 
         this.players = {
@@ -128,6 +127,14 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
                 this.players[message.player].inputs = { ...message.inputs };
 
                 this.movePlayers();
+            } else if (message.action === 'pause') {
+                this.scene.launch('Paused', { socket: this.socket });
+                this.scene.pause();
+
+            } else if (message.action === 'unpause') {
+                const pauseScene = this.scene.get('Paused');
+                pauseScene.scene.stop()
+                this.scene.resume();
             }
         }
     }

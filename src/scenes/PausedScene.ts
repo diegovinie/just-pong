@@ -1,18 +1,22 @@
 import * as Phaser from 'phaser';
-import { gameDefinitions } from '../definitions';
+import { gameDefinitions, GameComm } from '../definitions';
 import { TextButton } from '../components/TextButton';
 
 export class PausedScene extends Phaser.Scene {
+    socket: GameComm;
+
     constructor() {
         super('Paused')
     }
 
-    create() {
+    create(def: { socket: GameComm }) {
         const { field } = gameDefinitions;
+        const { socket } = def;
+
+        this.socket = socket;
 
         const onResume = () => {
-            this.scene.resume('Play');
-            this.scene.stop();
+            this.socket.send(JSON.stringify({ action: 'unpause'}));
         };
 
         const paused = this.add.text(field.width / 2, field.height / 2 - 20, 'PAUSED', {
@@ -36,6 +40,5 @@ export class PausedScene extends Phaser.Scene {
         const resumeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
         resumeKey.on('down', onResume, this);
-
     }
 }
