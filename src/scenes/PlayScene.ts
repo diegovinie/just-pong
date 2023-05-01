@@ -12,6 +12,7 @@ import { PlayerMove, IPlayer, Paddle, GameKey } from '../definitions';
 import { EnemyAI } from '../common/EnemyAI';
 import { SocketEmulator } from '../common/SocketEmulator';
 import { TouchInput } from '../components/TouchInput';
+import { Header } from '../components/Header';
 
 export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHaveEnemyAI {
     environment: Record<string, Phaser.GameObjects.GameObject>;
@@ -26,6 +27,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
     score = { a: 0, b: 0 };
     sounds: Record<string, Phaser.Sound.HTML5AudioSound>;
     touchInput: TouchInput;
+    header: Header;
 
     constructor(){
         super('Play');
@@ -117,6 +119,8 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             x:  screen.current.width - 40,
             y: screen.current.height - 100,
         });
+
+        this.header = new Header(this, this.socket);
 
         this.startTicker();
 
