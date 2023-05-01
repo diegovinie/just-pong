@@ -24,7 +24,7 @@ export const gameDefinitions = {
     },
     field: {
         width: 550,
-        height: 400,
+        height: 380,
         padding: 20,
         bgColor: theme.bg,
     },

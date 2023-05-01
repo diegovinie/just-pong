@@ -61,7 +61,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
 
         const topWall = this.add.rectangle(
             field.padding,
-            field.padding,
+            2 * field.padding,
             field.width - 2 * field.padding,
             walls.thickness,
             walls.color)
@@ -69,7 +69,7 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
 
         const bottomWall = this.add.rectangle(
             field.padding,
-            field.height - 2 * field.padding,
+            field.height - 1 * field.padding,
             field.width - 2 * field.padding,
             walls.thickness,
             walls.color)
@@ -289,8 +289,8 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
         return paddleGO;
     }
 
-    getGoal(position: PlayerPosition): Phaser.GameObjects.Rectangle {
-        const { field } = gameDefinitions;
+    getGoal(position: PlayerPosition): Phaser.GameObjects.Zone {
+        const { field, screen } = gameDefinitions;
         const width = 10;
         const coordX = position === 'b' ? 0 : field.width - width;
 
@@ -301,13 +301,11 @@ export class PlayScene extends Phaser.Scene implements IPong, ICanConnect, IHave
             }
         }
 
-        const goal = this.add.rectangle(
+        const goal = this.add.zone(
             coordX,
             0,
             width,
-            field.height,
-            0xbada55,
-            0.5
+            screen.current.height,
         ).setOrigin(0, 0);
 
         this.physics.add.existing(goal);
